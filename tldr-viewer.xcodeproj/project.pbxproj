@@ -317,6 +317,7 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Zip.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftyMarkdown.framework",
 			);
 			outputPaths = (
 			);
