@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyMarkdown
 
 class DetailPlatformViewModel {
     // the message to show when there's no tldr page
@@ -18,6 +19,9 @@ class DetailPlatformViewModel {
     
     // tldr page in HTML
     var detailHTML: String?
+    
+    // tldr page as an AttributedString
+    var detailAttributedString: NSAttributedString?
     
     private var command: Command!
     private var platform: Platform!
@@ -43,6 +47,9 @@ class DetailPlatformViewModel {
     }
     
     private func handleSuccess(_ markdownString: String) {
+        let md = SwiftyMarkdown(string: markdownString)
+        self.detailAttributedString = md.attributedString()
+        
         var markdown = Markdown()
         let html = markdown.transform(markdownString)
         self.detailHTML = Theme.pageFrom(htmlSnippet: html)
