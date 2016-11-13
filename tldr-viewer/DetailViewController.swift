@@ -14,13 +14,8 @@ class DetailViewController: UIViewController {
 
     @IBOutlet weak var messageView: UIView!
     @IBOutlet weak var messageLabel: UILabel!
+    @IBOutlet weak var detailLabel: UILabel!
     
-    var webView: WKWebView!
-    
-    // these two conflicting constraints adjust the layout depending on whether the segmented control is shown. Only one should be enabled
-    var webViewToTopAnchorConstraint: NSLayoutConstraint!
-    var webViewToSegmentedControlConstraint: NSLayoutConstraint!
-
     var viewModel: DetailViewModel! {
         didSet {
             self.viewModel.updateSignal = {
@@ -32,20 +27,6 @@ class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let configuration = WKWebViewConfiguration()
-        self.webView = WKWebView(frame: .zero, configuration: configuration)
-        
-        self.webView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.webView)
-        
-        self.webView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        self.webView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-        self.webView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-
-        // two top constraints for the web view
-        self.webViewToTopAnchorConstraint = self.webView.topAnchor.constraint(equalTo: self.view.topAnchor)
-        self.webViewToSegmentedControlConstraint = self.webView.topAnchor.constraint(equalTo: self.platformsSegmentedControl.bottomAnchor, constant: 3)
         
         self.messageView.isHidden = true
         
@@ -72,7 +53,7 @@ class DetailViewController: UIViewController {
     }
     
     private func doConfigureView() {
-        var htmlString: String?
+        var detailAttributedString: NSAttributedString?
         var message: NSAttributedString?
         var sceneTitle: String
         var showSegmentedControl = false
@@ -80,10 +61,10 @@ class DetailViewController: UIViewController {
         if let viewModel = self.viewModel, let platformViewModel = viewModel.selectedPlatform {
             if (platformViewModel.message != nil) {
                 message = platformViewModel.message
-                htmlString = nil
+                detailAttributedString = nil
             } else {
                 message = nil
-                htmlString = platformViewModel.detailHTML!
+                detailAttributedString = platformViewModel.detailAttributedString!
             }
             sceneTitle = viewModel.navigationBarTitle
             
@@ -93,7 +74,7 @@ class DetailViewController: UIViewController {
             }
         } else {
             message = Theme.detailAttributed(string: "Nothing selected")
-            htmlString = nil
+            detailAttributedString = nil
             sceneTitle = ""
         }
         
@@ -106,11 +87,11 @@ class DetailViewController: UIViewController {
             self.messageView.isHidden = true
         }
         
-        if let htmlStringToShow = htmlString {
-            self.webView.loadHTMLString(htmlStringToShow, baseURL: nil)
-            self.webView.isHidden = false
+        if let detailAttributedStringToShow = detailAttributedString {
+            self.detailLabel.attributedText = detailAttributedStringToShow
+            self.detailLabel.isHidden = false
         } else {
-            self.webView.isHidden = true
+            self.detailLabel.isHidden = true
         }
         
         self.title = sceneTitle
@@ -128,11 +109,11 @@ class DetailViewController: UIViewController {
     }
     
     private func doShowOrHideSegmentedControl(_ show: Bool) {
-        self.webViewToSegmentedControlConstraint.isActive = false
-        self.webViewToTopAnchorConstraint.isActive = false
+//        self.webViewToSegmentedControlConstraint.isActive = false
+//        self.webViewToTopAnchorConstraint.isActive = false
         
         self.platformsSegmentedControl.isHidden = !show
-        self.webViewToSegmentedControlConstraint.isActive = show
-        self.webViewToTopAnchorConstraint.isActive = !show
+//        self.webViewToSegmentedControlConstraint.isActive = show
+//        self.webViewToTopAnchorConstraint.isActive = !show
     }
 }
